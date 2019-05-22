@@ -13,6 +13,7 @@ library(ggplot2)
 library(stringr)
 library(tidyr)
 library(broom)
+library(readr)
 ```
 Source: https://www.kaggle.com/zynicide/wine-reviews/downloads/wine-reviews.zip/4
 
@@ -71,3 +72,28 @@ tidy(lmfit)
 glmfit <- glm(points ~ price, data, family="poisson")
 tidy(glmfit)
 ```
+
+The standard error on the logarithmic fit is orders of magnitude lower than the linear fit, suggesting that the relationship is more accurately represented in this manner. 
+
+What about the certain years being good for wines? The title column contains the year nestled between other, less interesting factoids regarding the type of wine. To access the year in question, we can scrape the year out of the attribute using stringr functions and feeding the data back into the existing dataframe with tidyr's mutate.
+
+```{r year}
+data = data %>% mutate(years = as.numeric(str_extract(title, "\\d{4}")))
+data %>% select(years, points)
+```
+
+Now that the years have been scraped from applicable entries, let's create a boxplot to compare mean scores. 
+
+```{r boxplot}
+data  %>% filter(data$years >=1850 & data$years<1870) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1870 & data$years<1890) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1890 & data$years<1910) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1910 & data$years<1930) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1930 & data$years<1950) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1950 & data$years<1970) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1970 & data$years<1990) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=1990 & data$years<2010) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+data  %>% filter(data$years >=2010 & data$years < 3000) %>% group_by(years) %>% ggplot(aes(factor(years), points)) + geom_boxplot()
+```
+
+Excluding years where there were one or fewer wines reviewed, notable years for above-average quality include 1927, 1952, 1980, and 1984. This demonstrates the potency of data science, as I've gone from knowing nothing about wine to knowing how nationality affects quality(not by much), how the price of a bottle affects its rating(it does, up to a point), and that when sommeliers say that the grapes were good in 1952, they might actually be onto something.  Thank you for reading.
