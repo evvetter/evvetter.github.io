@@ -1,6 +1,8 @@
 ---
 title: "wineview"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
 
 ```{r setup, include=FALSE}
@@ -18,7 +20,7 @@ Source: https://www.kaggle.com/zynicide/wine-reviews/downloads/wine-reviews.zip/
 My dataset is comprised of almost 130,000 reviews of invididual wines organized price, rating on a 0-100 point scale, nationality, type, year, taster, and winery of origin. Wine snobs annoy me, so I wanted to see if anything they have to say about quality holds water statistically. 
 
 ```{r intro}
-data <- read.csv(file="winemag-data-130k-v2.csv", header=TRUE, sep=",")
+data <- read.csv(file="winemag-data-130k-v2.csv")
 data
 ```
 
