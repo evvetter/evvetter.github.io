@@ -1,0 +1,49 @@
+---
+title: "wineview"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(data.table)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+library(tidyr)
+library(broom)
+```
+Source: https://www.kaggle.com/zynicide/wine-reviews/downloads/wine-reviews.zip/4
+
+
+My dataset is comprised of almost 130,000 reviews of invididual wines organized price, rating on a 0-100 point scale, nationality, type, year, taster, and winery of origin. Wine snobs annoy me, so I wanted to see if anything they have to say about quality holds water statistically. 
+
+```{r intro}
+data <- read.csv(file="winemag-data-130k-v2.csv", header=TRUE, sep=",")
+data
+```
+
+  Common assertions about wine include a relationship between price and quality, the statement that "X was a good year for Y wine," and the idea that certain countries make better wines. I'm going to explore these relationships using this database.
+
+First, the columns of the table. 
+```{r cols}
+colnames(data)
+```
+
+These can be refined or removed to add clarity. X is wholly unnecessary in this environment, denoting a row ID, while description and designations' use as qualitative data is irrelevant in the context of this paper.
+
+```{r cols2}
+data <- data %>% mutate(X=NULL, description=NULL, designation=NULL)
+```
+This removes those three columns from the table. 
+
+Next, what makes a good wine according to the data? Sorting mean rating by country and province of origin is easy enough.
+
+```{r meanQual}
+mean_score_nationality <- data %>% select(points, country) %>% group_by(country)%>% summarize(score=mean(points))
+mean_score_nationality
+```
+According to this, England produces the best wine on average, but a graphical aid would better display the differences between countries.
+```{r meanGraph}
+  mean_score_nationality %>% ggplot(aes(x=country, y=score)) + geom_bar(stat="identity", width=.4)
+```
+  
