@@ -44,8 +44,30 @@ Next, what makes a good wine according to the data? Sorting mean rating by count
 mean_score_nationality <- data %>% select(points, country) %>% group_by(country)%>% summarize(score=mean(points))
 mean_score_nationality
 ```
-According to this, England produces the best wine on average, but a graphical aid would better display the differences between countries.
+According to this, England produces the best wine on average, but a graphical aid would better display the differences between countries.  
 ```{r meanGraph}
-  mean_score_nationality %>% ggplot(aes(x=country, y=score)) + geom_bar(stat="identity", width=.4)
+  mean_score_nationality %>% ggplot(aes(x=country, y=score)) + geom_bar(stat="identity", width=.5) + labs(x="country", y="mean rating")
 ```
   
+This shows that while differences exist in ratings by nationality, the typical magnitude of that difference is relatively small. The power of data science is that a few lines of code can reduce an otherwise-insurmountable quantity of measurements to a graphic or figure parseable by the unaided eye.   
+
+How does price affect rating? This question is better suited to a linear regression of the data to find the relationship between the two continuous variables.
+
+```{r price}
+data %>% ggplot(aes(x=price,y=points))+geom_point()+geom_smooth(method=lm)+labs(x="price", y="rating")
+```
+
+The regression line on the graph looks off, so let's gather some information about the relationship. 
+```{r lm}
+lmfit <- lm(points ~ price, data)
+lmfit
+```
+The linear regression predicts that for every increment in price, the rating of the wine increases by .03. However, the graph from earlier looked like the bulk of the data was significantly below the line. The broom package provides functions for measuring the strength of a regression relationship.
+
+```{r lm2}
+tidy(lmfit)
+```
+```{r glm1}
+glmfit <- glm(points ~ price, data, family="poisson")
+tidy(glmfit)
+```
